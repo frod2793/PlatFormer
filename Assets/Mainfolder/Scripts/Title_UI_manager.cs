@@ -18,6 +18,7 @@ public class Title_UI_manager : MonoBehaviour
     
     [Header("씬 목록")]
     public SceneReference  adventureSceneName;
+    public SceneReference  trainingSceneName;
     
     private void Start()
     {
@@ -28,7 +29,7 @@ public class Title_UI_manager : MonoBehaviour
         
         trainingButton.onClick.AddListener(() =>
         {
-            Scenemanager.LoadScene("Training");
+            Scenemanager.LoadScene(trainingSceneName);
         });
         
         settingButton.onClick.AddListener(() =>

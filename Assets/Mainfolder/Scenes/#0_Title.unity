@@ -307,6 +307,9 @@ MonoBehaviour:
   adventureSceneName:
     sceneAsset: {fileID: 102900000, guid: 26fdd02f8d5c340cd86702da7032f57d, type: 3}
     scenePath: Assets/Mainfolder/Scenes/#1_Adventure_Lobby.unity
+  trainingSceneName:
+    sceneAsset: {fileID: 102900000, guid: dcd2d83520aab4a2cada9b4179b8d99f, type: 3}
+    scenePath: Assets/Mainfolder/Scenes/#2_Train_Lobby.unity
 --- !u!1 &436576233
 GameObject:
   m_ObjectHideFlags: 0
@@ -569,8 +572,8 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 25
+  m_VertexColorAlwaysGammaSpace: 1
+  m_AdditionalShaderChannelsFlag: 1
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0

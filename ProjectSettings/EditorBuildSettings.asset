@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Mainfolder/Scenes/#1_Adventure_Lobby.unity
     guid: 26fdd02f8d5c340cd86702da7032f57d
   - enabled: 1
+    path: Assets/Mainfolder/Scenes/#2_Train_Lobby.unity
+    guid: dcd2d83520aab4a2cada9b4179b8d99f
+  - enabled: 1
     path: Assets/Mainfolder/Scenes/#99_Loding.unity
     guid: f405b0094a73e4372a3084054dc098bc
   m_configObjects: {}
