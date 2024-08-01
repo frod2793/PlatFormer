@@ -1,9 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using EasyTransition;
+
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class Title_UI_manager : MonoBehaviour
