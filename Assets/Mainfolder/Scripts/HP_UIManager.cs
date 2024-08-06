@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HP_UIManager : MonoBehaviour
 {
@@ -9,7 +11,7 @@ public class HP_UIManager : MonoBehaviour
     public GameObject canvas;
 
     [Header("Enemy_UI")]
-    public GameObject Enemy_UIPrFeb; // UI 요소
+    public Slider Enemy_UIPrFeb; // UI 요소
     public EnemyBase[] Enemy_targets; // 따라다닐 대상 오브젝트
     public Vector3[] Enemy_offsets; // UI의 오프셋 값
     public RectTransform[] Enemy_uiElements; // UI 요소의 RectTransform
@@ -40,7 +42,9 @@ public class HP_UIManager : MonoBehaviour
             {
                 if (Enemy_targets[i] != null)
                 {
-                    GameObject ui = Instantiate(Enemy_UIPrFeb, canvas.transform);
+                    Slider ui = Instantiate(Enemy_UIPrFeb, canvas.transform);
+                    ui.maxValue = Enemy_targets[i].hp;
+                    ui.value = Enemy_targets[i].hp;
                     Enemy_uiElements[i] = ui.GetComponent<RectTransform>();
                     Enemy_offsets[i] = new Vector3(0, 1, 0); // UI 오프셋 설정
                 }
@@ -59,9 +63,18 @@ public class HP_UIManager : MonoBehaviour
                 if (Enemy_targets[i] != null && Enemy_uiElements[i] != null)
                 {
                     UpdateUIPosition(Enemy_targets[i].transform, Enemy_uiElements[i], Enemy_offsets[i]);
+                    UpdateUIValue(Enemy_uiElements[i].GetComponent<Slider>(), Enemy_targets[i].hp);
                 }
             }
         }
+    }
+
+
+    private void UpdateUIValue(Slider ui, float value)
+    {
+        if (ui == null) return;
+
+        ui.value = value;
     }
 
     private void UpdateUIPosition(Transform targetTransform, RectTransform uiTransform, Vector3 offset)
@@ -88,5 +101,8 @@ public class HP_UIManager : MonoBehaviour
             // UI 요소의 위치 설정
             uiTransform.localPosition = localPos;
         }
+        
+        
+        
     }
 }

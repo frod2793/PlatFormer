@@ -6220,7 +6220,7 @@ GameObject:
   m_Layer: 5
   m_Name: ObjectUI_Canvas
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -6596,13 +6596,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvas: {fileID: 959542117}
-  Enemy_UIPrFeb: {fileID: 241861677506401762, guid: acf8aed2622954f56b3800277cf902f9, type: 3}
-  Enemy_targets:
-  - {fileID: 0}
+  Enemy_UIPrFeb: {fileID: 5439462341650904358, guid: acf8aed2622954f56b3800277cf902f9, type: 3}
+  Enemy_targets: []
   Enemy_offsets: []
   Enemy_uiElements: []
   target: {fileID: 903573798}
-  offset: {x: 0, y: 0, z: 0}
+  offset: {x: 0, y: 1, z: 0}
   uiElement: {fileID: 1538333781}
 --- !u!1 &1442071716
 GameObject:
@@ -6804,7 +6803,7 @@ Transform:
   m_GameObject: {fileID: 1546065258}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 27.63, y: -7.8, z: 0}
+  m_LocalPosition: {x: 27.63, y: -8.04, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7533,7 +7532,7 @@ GameObject:
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -7576,7 +7575,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!223 &2115299858
 Canvas:
   m_ObjectHideFlags: 0
@@ -7710,7 +7709,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4692396015525928843, guid: acf8aed2622954f56b3800277cf902f9, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4692396015525928843, guid: acf8aed2622954f56b3800277cf902f9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -7736,7 +7735,7 @@ SceneRoots:
   - {fileID: 1265259802}
   - {fileID: 770902106}
   - {fileID: 2115299859}
-  - {fileID: 2100050576}
-  - {fileID: 2009283634}
-  - {fileID: 1568003935}
   - {fileID: 959542121}
+  - {fileID: 2100050576}
+  - {fileID: 1568003935}
+  - {fileID: 2009283634}
