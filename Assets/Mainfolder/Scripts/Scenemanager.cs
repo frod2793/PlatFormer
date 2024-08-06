@@ -7,7 +7,7 @@ public class Scenemanager : MonoBehaviour
 {
     public TransitionSettings transition;
     public float startDelay;
-
+    
         
     public void LoadScene(string _sceneName)
     {
