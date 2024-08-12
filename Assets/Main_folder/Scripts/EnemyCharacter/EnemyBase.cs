@@ -21,10 +21,9 @@ public class EnemyBase : MonoBehaviour
 
     public float hp = 100;
     public float speed = 5;
-    [Range(0, 10f)]
-    public float fallowRange = 10;
+    [Range(0, 10f)] public float fallowRange = 10;
     public float attackRange = 1;
-    public float attackDamage = 1;
+    public float attackDamage = 10;
     public float attackCoolTime = 1;
     private float attackCoolTimeCounter = 0;
     public float moveRange = 10;
@@ -33,11 +32,14 @@ public class EnemyBase : MonoBehaviour
 
     protected Rigidbody2D enemyRigidbody;
     protected GameObject fallowTarget;
-    
+
+    private bool isAttacking = false;  // 공격 딜레이 플래그
+    private bool isChangingState = false;  // 상태 변경 딜레이 플래그
     
     private int playerLayerMask;
-    
+
     public PlayerController playerController;
+
     private void Start()
     {
         BaseInit();
@@ -46,7 +48,7 @@ public class EnemyBase : MonoBehaviour
     private void LateUpdate()
     {
         ColliderDetect();
-        AttackCoolTime();
+     //   AttackCoolTime();
     }
 
     public virtual void BaseInit()
@@ -55,43 +57,60 @@ public class EnemyBase : MonoBehaviour
         enemyRigidbody = GetComponent<Rigidbody2D>();
     }
 
-   
+
     private void ColliderDetect()
     {
         Collider2D fallowCollider = Physics2D.OverlapCircle(transform.position, fallowRange, playerLayerMask);
         Collider2D hitCollider = Physics2D.OverlapCircle(transform.position, attackRange, playerLayerMask);
 
         // 플레이어에 직접적으로 닿았을 때 대미지를 준다
-        if (hitCollider != null && hitCollider.CompareTag("Player"))
+        if (hitCollider != null && hitCollider.CompareTag("Player") && !isAttacking)
         {
-//2초딜레이
+            if (playerController == null)
+            {
+                playerController = hitCollider.GetComponent<PlayerController>();
+            }
 
-            playerController?.Damage(attackDamage);
+            isAttacking = true;
+            StartCoroutine(DelayAction(2f, () =>
+            {
+                ChangeEnemyExpression(EnemyExpression.attack);
+                Debug.Log("콜라이더 디텍트 데미지");
+                isAttacking = false;  // 공격 완료 후 플래그 해제
+            },false));
         }
 
         // 플레이어 감지 및 추적 상태 변경
-        if (fallowCollider != null && enemyExpression != EnemyExpression.fallow)
+        if (fallowCollider != null && enemyExpression != EnemyExpression.fallow && !isChangingState)
         {
             Debug.Log("플레이어 감지");
             transform.DOKill();
             fallowTarget = fallowCollider.gameObject;
-            enemyExpression = EnemyExpression.fallow;
-            ChangeEnemyExpression(enemyExpression);
+            ChangeEnemyExpression(EnemyExpression.fallow);
         }
-        else if (fallowCollider == null && enemyExpression == EnemyExpression.fallow && enemyExpression != EnemyExpression.idle)
+        else if (fallowCollider == null && enemyExpression == EnemyExpression.fallow &&
+                 enemyExpression != EnemyExpression.idle && !isChangingState)
         {
-            enemyExpression = EnemyExpression.idle;
+            isChangingState = true;
             StartCoroutine(DelayAction(1f, () =>
             {
-                ChangeEnemyExpression(enemyExpression);
+                ChangeEnemyExpression(EnemyExpression.idle);
+                isChangingState = false;  // 상태 변경 완료 후 플래그 해제
             }));
         }
     }
 
-    private IEnumerator DelayAction(float delay, Action action)
+    private IEnumerator DelayAction(float delay, Action action,bool isfront  = true)
     {
-        yield return new WaitForSeconds(delay);
+        if (isfront)
+        {
+            yield return new WaitForSeconds(delay);
+        }
         action();
+        if (!isfront)
+        {
+            yield return new WaitForSeconds(delay);
+        }
     }
 
     public void Damage(float damage)
@@ -119,6 +138,7 @@ public class EnemyBase : MonoBehaviour
 
     public void ChangeEnemyExpression(EnemyExpression newExpression)
     {
+        enemyExpression = newExpression;
         switch (newExpression)
         {
             case EnemyExpression.idle:
@@ -144,8 +164,10 @@ public class EnemyBase : MonoBehaviour
         {
             return;
         }
+
         Vector2 moveDirection = new Vector2(Random.Range(-1f, 1f), 0);
-        Vector2 frontMove = new Vector2(enemyRigidbody.position.x + moveDirection.x * moveRange, enemyRigidbody.position.y);
+        Vector2 frontMove = new Vector2(enemyRigidbody.position.x + moveDirection.x * moveRange,
+            enemyRigidbody.position.y);
         RaycastHit2D rayHit = Physics2D.Raycast(frontMove, Vector3.down, 1, LayerMask.GetMask("Ground"));
 
         if (rayHit.collider == null)
@@ -157,28 +179,23 @@ public class EnemyBase : MonoBehaviour
         transform.DOMoveX(targetPositionX, speed).OnComplete(RandomMove);
     }
 
-    private void FallowPlayer()
+    private void FallowPlayer(float delay = 0.6f)
     {
         if (fallowTarget == null) return;
 
-        Vector2 playerPosition = fallowTarget.transform.position;
-        transform.DOMove(playerPosition, speed * 0.6f).OnComplete(() =>
+        transform.DOMoveX(fallowTarget.transform.position.x, speed * 0.6f).OnComplete(() =>
         {
-            enemyExpression = EnemyExpression.attack;
-            ChangeEnemyExpression(enemyExpression);
+            if (enemyExpression == EnemyExpression.fallow)
+            {
+                FallowPlayer(0.1f);
+            }
         });
     }
 
     private void Attack()
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, attackRange);
-        foreach (var collider in colliders)
-        {
-            if (collider.CompareTag("Player"))
-            {
-                collider.GetComponent<PlayerController>().Damage(attackDamage);
-            }
-        }
+        Debug.Log("플레이 디텍트 "+attackDamage);
+        playerController.Damage(attackDamage, transform);
     }
 
     private void Dead()

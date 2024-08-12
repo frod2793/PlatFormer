@@ -5452,6 +5452,8 @@ MonoBehaviour:
   jumpForce: 10
   Hp: 100
   AttackRange: 10
+  AttackDamage: 10
+  backForce: 20
 --- !u!1 &621080421
 GameObject:
   m_ObjectHideFlags: 0
@@ -6837,8 +6839,8 @@ MonoBehaviour:
   enemyExpression: 0
   hp: 100
   speed: 3
-  fallowRange: 10
-  attackRange: 5.12
+  fallowRange: 5.22
+  attackRange: 0.8
   attackDamage: 1
   attackCoolTime: 1
   moveRange: 10
@@ -6871,7 +6873,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 6
+  m_Constraints: 0
 --- !u!61 &1546065263
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -20,7 +20,13 @@ public class Enemy_Normal : EnemyBase
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.green;
+        Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
+        
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, fallowRange);
+        
     }
+    
+   
 }

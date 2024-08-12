@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -16,8 +18,9 @@ public class PlayerController : MonoBehaviour
     
     public float Hp = 100;
     public float AttackRange = 10;
+    public float AttackDamage = 10;
+public float backForce = 10;
     
-
     private void Start()
     {
         playerSprite = playerCollider.GetComponent<Rigidbody2D>();
@@ -73,22 +76,36 @@ public class PlayerController : MonoBehaviour
         return playerCollider.IsTouchingLayers(LayerMask.GetMask("Ground")) ;
     }
 
-    public void Damage(float damage)
+    public void Damage(float damage, Transform enemyTransform)
     {
-        Debug.Log("Player Damaged");
         // 피해를 입었을 때 처리
         Hp -= damage;
-        //피해를 입으면 뒤로 밀리는 효과
-        playerSprite.velocity = new Vector2(-playerSprite.velocity.x, playerSprite.velocity.y);
-        if (Hp <= 0)
+
+        
+        float distance = playerSprite.transform.position.x - enemyTransform.position.x;
+
+        if (distance>0)
         {
-            // 사망 처리
-            Debug.Log("Player Dead");
+            backForce = -backForce;
         }
+      
+        
+        Debug.Log("backForce: " + backForce);
+        Vector2 Direction = (playerSprite.transform.position - enemyTransform.position).normalized;
+        playerSprite.AddForce(Direction * backForce, ForceMode2D.Impulse);
+        
+StartCoroutine(Reset());
+    }
+
+    private IEnumerator Reset()
+    {
+        yield return new WaitForSeconds(0.5f);
+        playerSprite.velocity = Vector2.zero;
         
         
     }
-    
+
+
     private void FollowCamera()
     {
         Vector3 cameraPosition = mainCamera.transform.position;
