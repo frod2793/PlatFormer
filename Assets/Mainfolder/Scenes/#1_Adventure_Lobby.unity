@@ -5450,6 +5450,8 @@ MonoBehaviour:
   playerCollider: {fileID: 903573796}
   speed: 4
   jumpForce: 10
+  Hp: 100
+  AttackRange: 10
 --- !u!1 &621080421
 GameObject:
   m_ObjectHideFlags: 0
@@ -6602,7 +6604,7 @@ MonoBehaviour:
   Enemy_uiElements: []
   target: {fileID: 903573798}
   offset: {x: 0, y: 1, z: 0}
-  uiElement: {fileID: 1538333781}
+  PlayerHp_Slider: {fileID: 1538333782}
 --- !u!1 &1442071716
 GameObject:
   m_ObjectHideFlags: 0
@@ -6774,6 +6776,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4692396015525928843, guid: acf8aed2622954f56b3800277cf902f9, type: 3}
   m_PrefabInstance: {fileID: 516047901443225342}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1538333782 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5439462341650904358, guid: acf8aed2622954f56b3800277cf902f9, type: 3}
+  m_PrefabInstance: {fileID: 516047901443225342}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1546065258
 GameObject:
   m_ObjectHideFlags: 0
@@ -6824,12 +6837,14 @@ MonoBehaviour:
   enemyExpression: 0
   hp: 100
   speed: 3
+  fallowRange: 10
   attackRange: 5.12
-  attackDamage: 10
+  attackDamage: 1
   attackCoolTime: 1
   moveRange: 10
   isDead: 0
   isMove: 1
+  playerController: {fileID: 0}
 --- !u!50 &1546065262
 Rigidbody2D:
   serializedVersion: 4

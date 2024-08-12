@@ -21,24 +21,29 @@ public class EnemyBase : MonoBehaviour
 
     public float hp = 100;
     public float speed = 5;
-    [Range(0,10f)]
-    public float attackRange = 10;
+    [Range(0, 10f)]
+    public float fallowRange = 10;
+    public float attackRange = 1;
     public float attackDamage = 1;
     public float attackCoolTime = 1;
     private float attackCoolTimeCounter = 0;
     public float moveRange = 10;
     public bool isDead = false;
     public bool isMove = true;
-    
+
     protected Rigidbody2D enemyRigidbody;
     protected GameObject fallowTarget;
-
+    
+    
+    private int playerLayerMask;
+    
+    public PlayerController playerController;
     private void Start()
     {
         BaseInit();
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         ColliderDetect();
         AttackCoolTime();
@@ -46,31 +51,44 @@ public class EnemyBase : MonoBehaviour
 
     public virtual void BaseInit()
     {
+        playerLayerMask = LayerMask.GetMask("Player");
+        enemyRigidbody = GetComponent<Rigidbody2D>();
     }
 
+   
     private void ColliderDetect()
     {
-        Collider2D collider = Physics2D.OverlapCircle(transform.position, attackRange, LayerMask.GetMask("Player"));
+        Collider2D fallowCollider = Physics2D.OverlapCircle(transform.position, fallowRange, playerLayerMask);
+        Collider2D hitCollider = Physics2D.OverlapCircle(transform.position, attackRange, playerLayerMask);
 
-        if (collider != null && enemyExpression != EnemyExpression.fallow)
+        // 플레이어에 직접적으로 닿았을 때 대미지를 준다
+        if (hitCollider != null && hitCollider.CompareTag("Player"))
+        {
+//2초딜레이
+
+            playerController?.Damage(attackDamage);
+        }
+
+        // 플레이어 감지 및 추적 상태 변경
+        if (fallowCollider != null && enemyExpression != EnemyExpression.fallow)
         {
             Debug.Log("플레이어 감지");
             transform.DOKill();
-            fallowTarget = collider.gameObject;
+            fallowTarget = fallowCollider.gameObject;
             enemyExpression = EnemyExpression.fallow;
             ChangeEnemyExpression(enemyExpression);
         }
-        else if (collider == null && enemyExpression == EnemyExpression.fallow&&enemyExpression!=EnemyExpression.idle)
+        else if (fallowCollider == null && enemyExpression == EnemyExpression.fallow && enemyExpression != EnemyExpression.idle)
         {
             enemyExpression = EnemyExpression.idle;
-            StartCoroutine(co_DeleayAction(1, () =>
+            StartCoroutine(DelayAction(1f, () =>
             {
                 ChangeEnemyExpression(enemyExpression);
             }));
         }
     }
 
-  private IEnumerator co_DeleayAction(float delay, Action action)
+    private IEnumerator DelayAction(float delay, Action action)
     {
         yield return new WaitForSeconds(delay);
         action();
@@ -144,7 +162,7 @@ public class EnemyBase : MonoBehaviour
         if (fallowTarget == null) return;
 
         Vector2 playerPosition = fallowTarget.transform.position;
-        transform.DOMove(playerPosition, speed*0.6f).OnComplete(() =>
+        transform.DOMove(playerPosition, speed * 0.6f).OnComplete(() =>
         {
             enemyExpression = EnemyExpression.attack;
             ChangeEnemyExpression(enemyExpression);

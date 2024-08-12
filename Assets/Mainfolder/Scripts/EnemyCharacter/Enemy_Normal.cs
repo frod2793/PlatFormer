@@ -15,6 +15,7 @@ public class Enemy_Normal : EnemyBase
         enemyCollider = GetComponent<Collider2D>();
         enemyRigidbody = GetComponent<Rigidbody2D>();
         ChangeEnemyExpression(EnemyExpression.idle);
+        playerController = FindObjectOfType<PlayerController>();
     }
 
     private void OnDrawGizmosSelected()

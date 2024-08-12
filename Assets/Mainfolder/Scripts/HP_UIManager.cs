@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class HP_UIManager : MonoBehaviour
@@ -20,9 +21,12 @@ public class HP_UIManager : MonoBehaviour
     public Transform target; // 따라다닐 대상 오브젝트
     public Vector3 offset; // UI의 오프셋 값
 
-    public RectTransform uiElement; // UI 요소의 RectTransform
+    [FormerlySerializedAs("uiElement")] public Slider PlayerHp_Slider; // UI 요소의 RectTransform
     private Camera mainCamera;
-
+    private RectTransform PlayerHp_SliderRectTransform;
+    
+    private PlayerController playerController;
+    
     private void Start()
     {
         mainCamera = Camera.main;
@@ -50,11 +54,14 @@ public class HP_UIManager : MonoBehaviour
                 }
             }
         }
+        PlayerHp_SliderRectTransform = PlayerHp_Slider.GetComponent<RectTransform>();
+        playerController = FindObjectOfType<PlayerController>();
     }
 
     private void LateUpdate()
     {
-        UpdateUIPosition(target, uiElement, offset);
+        UpdateUIPosition(target, PlayerHp_SliderRectTransform, offset);
+        UpdateUIValue(PlayerHp_Slider, playerController.Hp);
 
         if (Enemy_targets != null && Enemy_uiElements != null)
         {

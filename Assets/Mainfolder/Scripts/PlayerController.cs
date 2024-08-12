@@ -13,6 +13,10 @@ public class PlayerController : MonoBehaviour
     [Range(0, 500)] public float jumpForce = 0;
 
     private const float Gravity = 1.7f;
+    
+    public float Hp = 100;
+    public float AttackRange = 10;
+    
 
     private void Start()
     {
@@ -72,6 +76,17 @@ public class PlayerController : MonoBehaviour
     public void Damage(float damage)
     {
         Debug.Log("Player Damaged");
+        // 피해를 입었을 때 처리
+        Hp -= damage;
+        //피해를 입으면 뒤로 밀리는 효과
+        playerSprite.velocity = new Vector2(-playerSprite.velocity.x, playerSprite.velocity.y);
+        if (Hp <= 0)
+        {
+            // 사망 처리
+            Debug.Log("Player Dead");
+        }
+        
+        
     }
     
     private void FollowCamera()
