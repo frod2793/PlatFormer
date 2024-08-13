@@ -5453,7 +5453,7 @@ MonoBehaviour:
   Hp: 100
   AttackRange: 10
   AttackDamage: 10
-  backForce: 20
+  backForce: 2
 --- !u!1 &621080421
 GameObject:
   m_ObjectHideFlags: 0
@@ -6840,7 +6840,7 @@ MonoBehaviour:
   hp: 100
   speed: 3
   fallowRange: 5.22
-  attackRange: 0.8
+  attackRange: 0.56
   attackDamage: 1
   attackCoolTime: 1
   moveRange: 10
@@ -6873,7 +6873,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &1546065263
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -7592,7 +7592,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!223 &2115299858
 Canvas:
   m_ObjectHideFlags: 0

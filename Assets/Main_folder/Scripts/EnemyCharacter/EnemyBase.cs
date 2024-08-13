@@ -14,7 +14,8 @@ public class EnemyBase : MonoBehaviour
         idle,
         attack,
         fallow,
-        dead
+        dead,
+        stop
     }
 
     public EnemyExpression enemyExpression = EnemyExpression.idle;
@@ -64,20 +65,16 @@ public class EnemyBase : MonoBehaviour
         Collider2D hitCollider = Physics2D.OverlapCircle(transform.position, attackRange, playerLayerMask);
 
         // 플레이어에 직접적으로 닿았을 때 대미지를 준다
-        if (hitCollider != null && hitCollider.CompareTag("Player") && !isAttacking)
+        if (hitCollider != null && hitCollider.CompareTag("Player") )
         {
             if (playerController == null)
             {
                 playerController = hitCollider.GetComponent<PlayerController>();
             }
 
-            isAttacking = true;
-            StartCoroutine(DelayAction(2f, () =>
-            {
+           
                 ChangeEnemyExpression(EnemyExpression.attack);
-                Debug.Log("콜라이더 디텍트 데미지");
-                isAttacking = false;  // 공격 완료 후 플래그 해제
-            },false));
+         
         }
 
         // 플레이어 감지 및 추적 상태 변경
@@ -102,15 +99,13 @@ public class EnemyBase : MonoBehaviour
 
     private IEnumerator DelayAction(float delay, Action action,bool isfront  = true)
     {
-        if (isfront)
-        {
+      
             yield return new WaitForSeconds(delay);
-        }
+       
         action();
-        if (!isfront)
-        {
+       
             yield return new WaitForSeconds(delay);
-        }
+      
     }
 
     public void Damage(float damage)
@@ -146,6 +141,7 @@ public class EnemyBase : MonoBehaviour
                 break;
             case EnemyExpression.attack:
                 Attack();
+                Debug.Log("ATTACK"+enemyExpression);
                 break;
             case EnemyExpression.fallow:
                 FallowPlayer();
@@ -153,11 +149,18 @@ public class EnemyBase : MonoBehaviour
             case EnemyExpression.dead:
                 Dead();
                 break;
+            case EnemyExpression.stop:
+                moveStop();
+                break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
     }
 
+    private void moveStop()
+    {
+        isMove = false;
+    }
     private void RandomMove()
     {
         if (!isMove)
@@ -181,6 +184,11 @@ public class EnemyBase : MonoBehaviour
 
     private void FallowPlayer(float delay = 0.6f)
     {
+        if (!isMove)
+        {
+            return;
+        }
+        
         if (fallowTarget == null) return;
 
         transform.DOMoveX(fallowTarget.transform.position.x, speed * 0.6f).OnComplete(() =>
@@ -195,7 +203,21 @@ public class EnemyBase : MonoBehaviour
     private void Attack()
     {
         Debug.Log("플레이 디텍트 "+attackDamage);
-        playerController.Damage(attackDamage, transform);
+
+        if (isAttacking == false)
+        {
+            isAttacking = true;
+            
+            playerController.Damage(attackDamage, transform.position);
+            
+            
+            StartCoroutine(DelayAction(2f, () =>
+            {
+                ChangeEnemyExpression(EnemyExpression.fallow);
+              
+                isAttacking = false;
+            }));
+        }
     }
 
     private void Dead()
