@@ -158,7 +158,6 @@ public class PlayerController : MonoBehaviour
         // delay 시간마다 EnemyAttack 메서드 호출
         if (IsAttack)
         { 
-            Debug.Log("IsAttack");
             return;
         }
      

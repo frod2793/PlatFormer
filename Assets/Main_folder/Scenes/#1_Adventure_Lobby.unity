@@ -5452,7 +5452,7 @@ MonoBehaviour:
   jumpForce: 10
   Hp: 100
   AttackRange: 2.55
-  AttackDamage: 1
+  AttackDamage: 100
   backForce: 2
 --- !u!1 &621080421
 GameObject:
@@ -6601,7 +6601,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canvas: {fileID: 959542117}
   Enemy_UIPrFeb: {fileID: 5439462341650904358, guid: acf8aed2622954f56b3800277cf902f9, type: 3}
-  Enemy_targets: []
   Enemy_offsets: []
   Enemy_uiElements: []
   target: {fileID: 903573798}
@@ -7380,6 +7379,7 @@ Transform:
   - {fileID: 1051937193}
   - {fileID: 786937868}
   - {fileID: 1322241401}
+  - {fileID: 2142057271}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2060276866
@@ -7640,6 +7640,51 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &2142057270
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2142057271}
+  - component: {fileID: 2142057272}
+  m_Layer: 0
+  m_Name: Enemy_Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2142057271
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2142057270}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2009283634}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2142057272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2142057270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a77b886118e93ea4a9e02c9550ddcb6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Enemy_targetsList: []
 --- !u!1001 &516047901443225342
 PrefabInstance:
   m_ObjectHideFlags: 0

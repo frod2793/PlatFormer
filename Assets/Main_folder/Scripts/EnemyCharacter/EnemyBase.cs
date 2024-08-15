@@ -41,7 +41,12 @@ public class EnemyBase : MonoBehaviour
 
     public PlayerController playerController;
 
-    private void Start()
+
+    public delegate void ActionDelegate(GameObject obj);
+
+    public ActionDelegate DeadDelegate;
+    
+    private void Awake()
     {
         BaseInit();
     }
@@ -54,6 +59,7 @@ public class EnemyBase : MonoBehaviour
 
     public virtual void BaseInit()
     {
+        DeadDelegate += Dead;
         playerLayerMask = LayerMask.GetMask("Player");
         enemyRigidbody = GetComponent<Rigidbody2D>();
     }
@@ -178,7 +184,8 @@ public class EnemyBase : MonoBehaviour
                 FallowPlayer();
                 break;
             case EnemyExpression.dead:
-                Dead();
+                DeadDelegate(this.gameObject);
+                Debug.Log("dead: "+enemyExpression);
                 break;
             case EnemyExpression.stop:
                 moveStop();
@@ -251,9 +258,9 @@ public class EnemyBase : MonoBehaviour
         }
     }
 
-    private void Dead()
+    private void Dead(GameObject obj)
     {
         isDead = true;
-        Destroy(gameObject);
+        Destroy(obj);
     }
 }
