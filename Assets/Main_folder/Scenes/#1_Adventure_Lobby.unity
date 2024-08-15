@@ -5451,8 +5451,8 @@ MonoBehaviour:
   speed: 4
   jumpForce: 10
   Hp: 100
-  AttackRange: 10
-  AttackDamage: 10
+  AttackRange: 2.55
+  AttackDamage: 1
   backForce: 2
 --- !u!1 &621080421
 GameObject:
@@ -6802,7 +6802,7 @@ GameObject:
   - component: {fileID: 1546065263}
   - component: {fileID: 1546065262}
   - component: {fileID: 1546065261}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Enemy_normal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6841,7 +6841,7 @@ MonoBehaviour:
   speed: 3
   fallowRange: 5.22
   attackRange: 0.56
-  attackDamage: 1
+  attackDamage: 10
   attackCoolTime: 1
   moveRange: 10
   isDead: 0

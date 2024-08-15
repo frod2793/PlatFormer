@@ -73,7 +73,7 @@ public class EnemyBase : MonoBehaviour
             }
 
            
-                ChangeEnemyExpression(EnemyExpression.attack);
+            ChangeEnemyExpression(EnemyExpression.attack);
          
         }
 
@@ -108,9 +108,13 @@ public class EnemyBase : MonoBehaviour
       
     }
 
-    public void Damage(float damage)
+    public void Damage(float damage, Vector2 direction, float KnockBackforce = 5)
     {
         hp -= damage;
+
+        KnockBack(direction, KnockBackforce);
+        ChangeEnemyExpression(EnemyExpression.stop);
+
         if (hp <= 0)
         {
             enemyExpression = EnemyExpression.dead;
@@ -118,6 +122,33 @@ public class EnemyBase : MonoBehaviour
         }
     }
 
+    public void KnockBack(Vector2 direction, float force)
+    { 
+        Blink();
+    
+        // 넉백 위치 계산: 현재 위치에서 방향에 따라 넉백
+        Vector3 knockbackTarget = transform.position + (Vector3)(direction.normalized * force);
+    
+        // DOTween을 사용하여 부드럽게 넉백 효과 적용
+        transform.DOMove(knockbackTarget, 0.2f).SetEase(Ease.OutQuad).OnComplete((() =>
+        {
+            ChangeEnemyExpression(EnemyExpression.fallow);
+        } )).SetLink(gameObject); // 메모리 누수 방지
+    }
+
+    public void Blink()
+    {
+        // 스프라이트 렌더러를 가져옴
+        SpriteRenderer spriteRenderer = transform.GetComponent<SpriteRenderer>();
+
+        // 0.1초 동안 알파 값을 0으로 만들어 사라지게 하고, 다시 1로 만들어 나타나게 함
+        spriteRenderer.DOFade(0, 0.1f).SetLoops(6, LoopType.Yoyo).SetEase(Ease.InOutQuad).OnComplete(() =>
+        {
+            Debug.Log("Blink complete");
+            ChangeEnemyExpression(EnemyExpression.fallow);
+        }).SetLink(gameObject); // 메모리 누수 방지
+    }
+    
     public void AttackCoolTime()
     {
         if (enemyExpression == EnemyExpression.attack)
