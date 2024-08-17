@@ -261,6 +261,5 @@ public class EnemyBase : MonoBehaviour
     private void Dead(GameObject obj)
     {
         isDead = true;
-        Destroy(obj);
     }
 }
