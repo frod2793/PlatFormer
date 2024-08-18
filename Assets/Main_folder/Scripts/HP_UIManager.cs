@@ -33,7 +33,8 @@ public class HP_UIManager : MonoBehaviour
     public Transform target; // 따라다닐 대상 오브젝트
     public Vector3 offset; // UI의 오프셋 값
 
-    [FormerlySerializedAs("uiElement")] public Slider PlayerHp_Slider; // UI 요소의 RectTransform
+    [FormerlySerializedAs("uiElement")]
+    public Slider PlayerHp_Slider; // UI 요소의 RectTransform
     private Camera mainCamera;
     private RectTransform PlayerHp_SliderRectTransform;
     
@@ -193,7 +194,7 @@ public class HP_UIManager : MonoBehaviour
     private void LateUpdate()
     {
         UpdateUIPosition(target, PlayerHp_SliderRectTransform, offset);
-        UpdateUIValue(PlayerHp_Slider, playerController.Hp);
+        UpdateUIValue(PlayerHp_Slider,playerController.Hp);
 
         if (enemyManager.Enemy_targetsList.Count>= 0 && Enemy_uiElements != null)
         {
@@ -218,6 +219,10 @@ public class HP_UIManager : MonoBehaviour
     {
         if (ui == null) return;
 
+        Debug.Log("체력 갱신");
+        Debug.Log(value);
+        Debug.Log(ui.value);
+        Debug.Log(ui.name);
         ui.value = value;
     }
 
