@@ -114,12 +114,26 @@ public class EnemyBase : MonoBehaviour
       
     }
 
-    public void Damage(float damage, Vector2 direction, float KnockBackforce = 5)
+    public void Damage(float damage, Vector2 direction, float KnockBackforce = 2)
     {
         hp -= damage;
+        transform.DOKill();
+        isMove = false;
+        direction.x= transform.position.x - direction.x;
+        
+        if (direction.x > 0)
+        {
+            direction = new Vector2(1, 1);  // 왼쪽 위로 넉백
+            Debug.Log("왼쪽");
+        }
+        else
+        {
+            
+            direction = new Vector2(-1, 1);  // 오른쪽 위로 넉백
+            Debug.Log("오른쪽");
+        }
 
         KnockBack(direction, KnockBackforce);
-        ChangeEnemyExpression(EnemyExpression.stop);
 
         if (hp <= 0)
         {
@@ -151,7 +165,9 @@ public class EnemyBase : MonoBehaviour
         spriteRenderer.DOFade(0, 0.1f).SetLoops(6, LoopType.Yoyo).SetEase(Ease.InOutQuad).OnComplete(() =>
         {
             Debug.Log("Blink complete");
+          
             ChangeEnemyExpression(EnemyExpression.fallow);
+            isMove = true;
         }).SetLink(gameObject); // 메모리 누수 방지
     }
     
