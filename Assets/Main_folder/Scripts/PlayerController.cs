@@ -23,6 +23,8 @@ public class PlayerController : MonoBehaviour
     public float backForce = 20;
     bool IsAttack = false;
     
+    public delegate void PlayerAction(int skillIndex, float delay);
+    public event PlayerAction OnPlayerAttack;
     
     bool iscontroll = true;
     private void Start()
@@ -155,56 +157,56 @@ public class PlayerController : MonoBehaviour
 
     private void EnemyDetect(float delay = 5f)
     {
-        // delay 시간마다 EnemyAttack 메서드 호출
+        // 이미 공격 중이라면 메서드를 종료
         if (IsAttack)
         { 
             return;
         }
-     
-        // 적을 감지하고 공격
-        StartCoroutine(DelayAction(delay, () =>
-        {
+
+        // 공격 시작
+       
             // 플레이어의 위치에서 AttackRange 반경 내에 있는 Collider2D 객체를 모두 가져옴
-            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(playerSprite.transform.position, AttackRange,
-                LayerMask.GetMask("Enemy"));
+            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(playerSprite.transform.position, AttackRange, LayerMask.GetMask("Enemy"));
 
-            // 감지된 모든 적에 대해 반복
-            foreach (Collider2D enemy in hitEnemies)
+            if (hitEnemies.Length > 0)
             {
-                // 적에게 데미지를 가하는 로직 (적의 스크립트에서 Damage 메서드를 호출)
-                EnemyBase enemyScript = enemy.GetComponent<EnemyBase>();
-                if (enemyScript != null)
-                {  
-                    IsAttack = true; 
-                    Debug.Log("Attack");
-                    //무기에 따라 데미지와 넉백 범위 설정 
-                    enemyScript.Damage(AttackDamage, playerSprite.transform.position, 5);
-                    StartCoroutine(DelayAction(delay, () =>
+                IsAttack = true;
+                Debug.Log("Attack");
+
+                // 모든 적에 대해 데미지와 넉백 범위 설정
+                foreach (Collider2D enemy in hitEnemies)
+                {
+                    EnemyBase enemyScript = enemy.GetComponent<EnemyBase>();
+                    if (enemyScript != null)
                     {
-                        IsAttack = false; 
-                    }));
-
+                        // 무기에 따라 데미지와 넉백 범위 설정
+                        enemyScript.Damage(AttackDamage, playerSprite.transform.position, 5);
+                    }
                 }
+                OnPlayerAttack?.Invoke(0, delay);
+                // 쿨타임이 끝난 후 공격 가능
+                StartCoroutine(DelayAction(delay, () =>
+                {
+                    IsAttack = false;
+                }));
             }
-                
-        },false));
-
+        
     }
-    
-    private IEnumerator DelayAction(float delay, Action action,bool isfront  = true)
-    {
-        if (isfront)
-        {
-            yield return new WaitForSeconds(delay);
-        }
-       
-        action();
-        if (!isfront)
-        {
-            yield return new WaitForSeconds(delay);
 
+    private IEnumerator DelayAction(float delay, Action action, bool isFront = true)
+    {
+        if (isFront)
+        {
+            yield return new WaitForSeconds(delay);
         }
-       
+
+        action();
+
+        // isFront가 false일 경우 추가 딜레이
+        if (!isFront)
+        {
+            yield return new WaitForSeconds(delay);
+        }
     }
 
 // 공격 범위를 시각화하기 위한 Gizmos

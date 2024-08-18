@@ -11,21 +11,14 @@ using Debug = UnityEngine.Debug;
 
 public class HP_UIManager : MonoBehaviour
 {
-
-    [Header("sKILL ICON")]
-     Image skillIcon; 
-     Image skillIcon_fill;
-     TMPro.TextMeshProUGUI skillCoolTimeText;
-    
+    [Header("Skill Icons")]
     public List<Image> skillIcons = new List<Image>();
-    public List<Image> skillIcon_fills = new List<Image>();
+    public List<Image> skillIconFills = new List<Image>();
     public List<TMPro.TextMeshProUGUI> skillCoolTimeTexts = new List<TMPro.TextMeshProUGUI>();
-    public int skillIndex = 0;
-    private float time_cooltime = 2;
-    private float time_current;
-    private float time_start;
-    private bool isEnded = true;
-    
+
+    private List<float> skillCooldowns;
+    private List<float> skillCooldownTimers;
+    private List<bool> skillIsCoolingDown;
     
     [Header("UIcanvas")]
     public GameObject canvas;
@@ -49,116 +42,22 @@ public class HP_UIManager : MonoBehaviour
     EnemyManager enemyManager;
     
     private void Start()
-    {
+    {    
+        playerController = FindObjectOfType<PlayerController>();
         mainCamera = Camera.main;
         if (mainCamera == null)
         {
             Debug.LogError("Main camera 못찾음 ");
             return;
         }
-
         Enemy_UI_Init();
+        InitializeSkills();
         PlayerHp_SliderRectTransform = PlayerHp_Slider.GetComponent<RectTransform>();
-        playerController = FindObjectOfType<PlayerController>();
     }
 
-    private void SkillIconInit()
-    {
-        // Count 값을 미리 저장하여 성능 최적화
-        int fillCount = skillIcon_fills.Count;
-        int iconCount = skillIcons.Count;
-        int textCount = skillCoolTimeTexts.Count;
 
-        // skillIcon_fills 초기화
-        for (int i = 0; i < fillCount; i++)
-        {
-            var skillIconFill = skillIcon_fills[i];
-            skillIconFill.type = Image.Type.Filled;
-            skillIconFill.fillMethod = Image.FillMethod.Radial360;
-            skillIconFill.fillOrigin = (int)Image.Origin360.Top;
-            skillIconFill.fillClockwise = false;
-        }
+    #region Enemy_UI
 
-        // skillIcons 초기화
-        for (int i = 0; i < iconCount; i++)
-        {
-            skillIcons[i].gameObject.SetActive(false);
-        }
-    
-        // skillCoolTimeTexts 초기화
-        for (int i = 0; i < textCount; i++)
-        {
-            skillCoolTimeTexts[i].gameObject.SetActive(false);
-        }
-    }
-
-    private void Check_CoolTime()
-    {
-        if (skillIndex < 0 || skillIndex >= skillIcon_fills.Count) return;
-
-        time_current = Time.time - time_start;
-
-        if (time_current < time_cooltime)
-        {
-            Set_FillAmount(skillIndex, time_cooltime - time_current);
-        }
-        else if (!isEnded)
-        {
-            End_CoolTime(skillIndex);
-        }
-    }
-    private void Trigger_Skill()
-    {
-        if (!isEnded)
-        {
-            Debug.LogError("Hold On");
-            return;
-        }
-
-        Reset_CoolTime(skillIndex);
-        Debug.LogError("Trigger_Skill!");
-    }
-
-    private void Reset_CoolTime(int index)
-    {
-        if (index < 0 || index >= skillCoolTimeTexts.Count) return;
-
-        // 쿨타임 텍스트 활성화
-        skillCoolTimeTexts[index].gameObject.SetActive(true);
-
-        // 쿨타임 초기화
-        time_current = time_cooltime;
-        time_start = Time.time;
-
-        // 아이콘 채우기 상태 초기화
-        Set_FillAmount(index, time_cooltime);
-
-        // 스킬이 아직 사용 중임을 표시
-        isEnded = false;
-
-        // 스킬 아이콘 비활성화
-        skillIcons[index].gameObject.SetActive(false);
-    }
-    private void Set_FillAmount(int index, float remainingTime)
-    {
-        if (index < 0 || index >= skillIcon_fills.Count) return;
-
-        float fillAmount = remainingTime / time_cooltime;
-
-        skillIcon_fills[index].fillAmount = fillAmount;
-        skillCoolTimeTexts[index].text = remainingTime.ToString("F1");
-        skillCoolTimeTexts[index].gameObject.SetActive(true);
-    }
-
-    private void End_CoolTime(int index)
-    {
-        if (index < 0 || index >= skillIcon_fills.Count) return;
-
-        skillIcon_fills[index].fillAmount = 0;
-        skillCoolTimeTexts[index].gameObject.SetActive(false);
-        skillIcons[index].gameObject.SetActive(true);
-        isEnded = true;
-    }
     private void Enemy_UI_Init()
     {
         enemyManager = FindObjectOfType<EnemyManager>();
@@ -192,7 +91,105 @@ public class HP_UIManager : MonoBehaviour
             Debug.LogError("적이 없음");
         }
     }
+    private void DeleteUIElement(GameObject obj)
+    {
+        for (int i = 0; i < enemyManager.Enemy_targetsList.Count ; i++)
+        {
+            if (enemyManager.Enemy_targetsList[i].gameObject == obj)
+            {
+                
+                Destroy(Enemy_uiElements[i].gameObject);
+                enemyManager.RemoveEnemy(obj);
+                Debug.Log("적 UI 제거");
+            }
+        }
+        
+    }
+    #endregion
 
+
+
+    #region Skill_UI
+    private void InitializeSkills()
+    {      
+        playerController.OnPlayerAttack += TriggerSkill;
+        int skillCount = skillIcons.Count;
+
+        // 리스트 초기화
+        skillCooldowns = new List<float>(skillCount);
+        skillCooldownTimers = new List<float>(skillCount);
+        skillIsCoolingDown = new List<bool>(skillCount);
+
+        for (int i = 0; i < skillCount; i++)
+        {
+            Image fillImage = skillIconFills[i];
+            fillImage.type = Image.Type.Filled;
+            fillImage.fillMethod = Image.FillMethod.Radial360;
+            fillImage.fillOrigin = (int)Image.Origin360.Top;
+            fillImage.fillClockwise = false;
+            fillImage.fillAmount = 0;
+
+            skillIcons[i].gameObject.SetActive(true);
+            skillCoolTimeTexts[i].gameObject.SetActive(false);
+
+            skillCooldowns.Add(0f); // 모든 스킬의 쿨타임을 기본값 5초로 설정
+            skillCooldownTimers.Add(0f); // 쿨타임 타이머 초기화
+            skillIsCoolingDown.Add(false); // 스킬 쿨타임 상태 초기화
+        }
+    }
+    
+    private void UpdateSkillCooldowns()
+    {
+        int skillCount = skillIcons.Count;
+
+        for (int i = 0; i < skillCount; i++)
+        {
+            if (skillIsCoolingDown[i])
+            {
+                skillCooldownTimers[i] -= Time.deltaTime;
+                float fillAmount = skillCooldownTimers[i] / skillCooldowns[i];
+                skillIconFills[i].fillAmount = fillAmount;
+                skillCoolTimeTexts[i].text = Mathf.Ceil(skillCooldownTimers[i]).ToString();
+                if (!skillCoolTimeTexts[i].gameObject.activeSelf)
+                {
+                    skillCoolTimeTexts[i].gameObject.SetActive(true);
+                }
+
+                if (skillCooldownTimers[i] <= 0)
+                {
+                    skillIsCoolingDown[i] = false;
+                    skillIconFills[i].fillAmount = 0;
+                    if (skillCoolTimeTexts[i].gameObject.activeSelf)
+                    {
+                        skillCoolTimeTexts[i].gameObject.SetActive(false);
+                    }
+                    skillIcons[i].gameObject.SetActive(true);
+                }
+            }
+        }
+    }
+    
+    public void TriggerSkill(int index,float SkillCooldowns)
+    {
+        if (index < 0 || index >= skillIcons.Count) return;
+
+        if (!skillIsCoolingDown[index])
+        {
+            skillCooldowns[index] = SkillCooldowns;
+            skillIsCoolingDown[index] = true;
+            skillCooldownTimers[index] = skillCooldowns[index];
+            // if (skillIcons[index].gameObject.activeSelf)
+            // {
+            //     skillIcons[index].gameObject.SetActive(false);
+            // }
+        }
+        else
+        {
+            Debug.LogError("Skill is on cooldown!");
+        }
+    }
+    #endregion
+    
     private void LateUpdate()
     {
         UpdateUIPosition(target, PlayerHp_SliderRectTransform, offset);
@@ -209,24 +206,13 @@ public class HP_UIManager : MonoBehaviour
                 }
             }
         }
+        
+        UpdateSkillCooldowns();
+        
     }
 
     
-    private void DeleteUIElement(GameObject obj)
-    {
-        for (int i = 0; i < enemyManager.Enemy_targetsList.Count ; i++)
-        {
-            if (enemyManager.Enemy_targetsList[i].gameObject == obj)
-            {
-                
-                Destroy(Enemy_uiElements[i].gameObject);
-                enemyManager.RemoveEnemy(obj);
-                Debug.Log("적 UI 제거");
-            }
-        }
-        
-    }
-    
+ 
 
     private void UpdateUIValue(Slider ui, float value)
     {
