@@ -6,15 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Mainfolder/Scenes/#0_Title.unity
+    path: Assets/Main_folder/Scenes/#0_Title.unity
     guid: 15b0812cff5aa4d828eeb9478803c93c
   - enabled: 1
-    path: Assets/Mainfolder/Scenes/#99_Loding.unity
+    path: Assets/Main_folder/Scenes/#99_Loding.unity
     guid: f405b0094a73e4372a3084054dc098bc
   - enabled: 1
-    path: Assets/Mainfolder/Scenes/#1_Adventure_Lobby.unity
+    path: Assets/Main_folder/Scenes/#1_Adventure_Lobby.unity
     guid: 26fdd02f8d5c340cd86702da7032f57d
   - enabled: 1
-    path: Assets/Mainfolder/Scenes/#2_Train_Lobby.unity
+    path: Assets/Main_folder/Scenes/#2_Train_Lobby.unity
     guid: dcd2d83520aab4a2cada9b4179b8d99f
   m_configObjects: {}

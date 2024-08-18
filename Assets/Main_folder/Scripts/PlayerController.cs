@@ -47,10 +47,8 @@ public class PlayerController : MonoBehaviour
         {
             Btn_jump();
         }
-      
         float horizontal = Input.GetAxis("Horizontal");
         HandleMovement(horizontal);
-        
     }
     public void HandleMovement( float horizontal)
     {
@@ -102,7 +100,6 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            
             direction = new Vector2(-1, 1);  // 오른쪽 위로 넉백
             Debug.Log("오른쪽");
         }

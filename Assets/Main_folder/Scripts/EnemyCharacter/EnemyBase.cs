@@ -171,18 +171,6 @@ public class EnemyBase : MonoBehaviour
         }).SetLink(gameObject); // 메모리 누수 방지
     }
     
-    public void AttackCoolTime()
-    {
-        if (enemyExpression == EnemyExpression.attack)
-        {
-            attackCoolTimeCounter += Time.deltaTime;
-            if (attackCoolTimeCounter >= attackCoolTime)
-            {
-                attackCoolTimeCounter = 0;
-                ChangeEnemyExpression(EnemyExpression.idle);
-            }
-        }
-    }
 
     public void ChangeEnemyExpression(EnemyExpression newExpression)
     {
