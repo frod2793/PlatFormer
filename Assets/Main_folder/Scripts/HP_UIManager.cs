@@ -219,10 +219,10 @@ public class HP_UIManager : MonoBehaviour
     {
         if (ui == null) return;
 
-        Debug.Log("체력 갱신");
-        Debug.Log(value);
-        Debug.Log(ui.value);
-        Debug.Log(ui.name);
+        // Debug.Log("체력 갱신");
+        // Debug.Log(value);
+        // Debug.Log(ui.value);
+        // Debug.Log(ui.name);
         ui.value = value;
     }
 
