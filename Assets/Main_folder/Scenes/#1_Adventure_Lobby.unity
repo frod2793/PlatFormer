@@ -9700,11 +9700,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4596344473355876159, guid: e5428cf15cd55c0408faa26b06bbb859, type: 3}
       propertyPath: attackRange
-      value: 8.38
+      value: 8.7
       objectReference: {fileID: 0}
     - target: {fileID: 4596344473355876159, guid: e5428cf15cd55c0408faa26b06bbb859, type: 3}
       propertyPath: fallowRange
-      value: 10
+      value: 12.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4596344473355876159, guid: e5428cf15cd55c0408faa26b06bbb859, type: 3}
+      propertyPath: stopDistance
+      value: 3.8
       objectReference: {fileID: 0}
     - target: {fileID: 8208083916057716387, guid: e5428cf15cd55c0408faa26b06bbb859, type: 3}
       propertyPath: m_LocalPosition.x
