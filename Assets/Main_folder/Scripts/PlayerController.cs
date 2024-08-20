@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
     public float AttackDamage = 1;
     public float backForce = 20;
     bool IsAttack = false;
+    bool Ishit = false;
     
     public delegate void PlayerAction(int skillIndex, float delay);
     public event PlayerAction OnPlayerAttack;
@@ -133,13 +134,17 @@ public class PlayerController : MonoBehaviour
         SpriteRenderer spriteRenderer = playerSprite.GetComponent<SpriteRenderer>();
 
         // 0.1초 동안 알파 값을 0으로 만들어 사라지게 하고, 다시 1로 만들어 나타나게 함
-        spriteRenderer.DOFade(0, 0.1f).SetLoops(6, LoopType.Yoyo).SetEase(Ease.InOutQuad);
-
-        // 깜빡임 효과가 끝난 후 알파 값을 1로 복원
-        spriteRenderer.DOFade(1, 0.1f).OnComplete(() => 
+        spriteRenderer.DOFade(0, 0.1f).SetLoops(6, LoopType.Yoyo).SetEase(Ease.InOutQuad).onComplete += () =>
         {
+            spriteRenderer.DOKill();
             Debug.Log("Blink complete");
-        });
+            spriteRenderer.DOFade(1, 0.1f).OnComplete(() => 
+            {
+                Debug.Log("Blink complete");
+            });
+        };
+
+    
     }
 
 
@@ -159,9 +164,6 @@ public class PlayerController : MonoBehaviour
         { 
             return;
         }
-
-        // 공격 시작
-       
             // 플레이어의 위치에서 AttackRange 반경 내에 있는 Collider2D 객체를 모두 가져옴
             Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(playerSprite.transform.position, AttackRange, LayerMask.GetMask("Enemy"));
 
@@ -187,7 +189,29 @@ public class PlayerController : MonoBehaviour
                     IsAttack = false;
                 }));
             }
-        
+            if (Ishit)
+            { 
+                return;
+            }
+            Collider2D[] hitBullet = Physics2D.OverlapCircleAll(playerSprite.transform.position, 1, LayerMask.GetMask("Bullet"));
+            if (hitBullet.Length > 0)
+            {
+                Ishit = true;
+                Debug.Log("Attack");
+
+                // 모든 적에 대해 데미지와 넉백 범위 설정
+                foreach (Collider2D Bullet in hitBullet)
+                {
+                    Destroy(Bullet.gameObject);
+                    Damage(2, Bullet.transform.position);
+                }
+                // 쿨타임이 끝난 후 공격 가능
+                StartCoroutine(DelayAction(0.5f, () =>
+                {
+                    Ishit = false;
+                }));
+            }
+
     }
 
     private IEnumerator DelayAction(float delay, Action action, bool isFront = true)

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Enemy_Shooter : EnemyBase
@@ -10,6 +11,7 @@ public class Enemy_Shooter : EnemyBase
     float bulletSpeed = 5f;
     [Range(0, 100f)] [SerializeField] float stopDistance = 10f;
     
+    Vector2 shootDirection;
     protected override void BaseInit()
     {
         base.BaseInit();
@@ -21,18 +23,29 @@ public class Enemy_Shooter : EnemyBase
     protected override void Attack()
     {
         transform.DOKill(); // 이동 중지
+        if (isAttacking == false)
+        {
+            isAttacking = true;
+            StartCoroutine(DelayAction(0.5f, () =>
+            {
+                Shoot( );
 
-        // 플레이어 방향으로 총알 발사
-        Vector3 direction = (playerController.transform.position - transform.position).normalized; // 플레이어 방향 계산
+                isAttacking = false;
+            }));
+        }
+    }
 
+    private void Shoot()
+    { 
         // 총알 생성
         GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
 
         // 총알의 Rigidbody2D 가져오기
         Rigidbody2D bulletRigidbody = bullet.GetComponent<Rigidbody2D>();
+        
 
         // 총알에 속도 부여
-        bulletRigidbody.velocity = direction * bulletSpeed;
+        bulletRigidbody.velocity = shootDirection * bulletSpeed;
 
         // 총알과 적 자신 간의 충돌 무시
         Collider2D bulletCollider = bullet.GetComponent<Collider2D>();
@@ -57,11 +70,13 @@ public class Enemy_Shooter : EnemyBase
         {
             // 플레이어가 적의 오른쪽에 있을 때
             targetPositionX = fallowTarget.transform.position.x - stopDistance;
+            shootDirection = Vector2.right;
         }
         else
         {
             // 플레이어가 적의 왼쪽에 있을 때
             targetPositionX = fallowTarget.transform.position.x + stopDistance;
+            shootDirection = Vector2.left;
         }
 
         // 목표 위치와 현재 위치 사이의 거리 계산

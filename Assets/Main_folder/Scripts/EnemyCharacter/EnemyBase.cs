@@ -163,8 +163,11 @@ public class EnemyBase : MonoBehaviour
         spriteRenderer.DOFade(0, 0.1f).SetLoops(6, LoopType.Yoyo).SetEase(Ease.InOutQuad).OnComplete(() =>
         {
             Debug.Log("Blink complete");
-          
-            ChangeEnemyExpression(EnemyExpression.fallow);
+            spriteRenderer.DOFade(1, 0.1f).OnComplete(() => 
+            {
+             
+                ChangeEnemyExpression(EnemyExpression.fallow);
+            });
             isMove = true;
         }).SetLink(gameObject); // 메모리 누수 방지
     }
