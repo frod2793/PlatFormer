@@ -160,10 +160,8 @@ public class PlayerController : MonoBehaviour
     private void EnemyDetect(float delay = 5f)
     {
         // 이미 공격 중이라면 메서드를 종료
-        if (IsAttack)
+        if (!IsAttack)
         { 
-            return;
-        }
             // 플레이어의 위치에서 AttackRange 반경 내에 있는 Collider2D 객체를 모두 가져옴
             Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(playerSprite.transform.position, AttackRange, LayerMask.GetMask("Enemy"));
 
@@ -189,11 +187,9 @@ public class PlayerController : MonoBehaviour
                     IsAttack = false;
                 }));
             }
-            if (Ishit)
-            { 
-                return;
-            }
-            Collider2D[] hitBullet = Physics2D.OverlapCircleAll(playerSprite.transform.position, 1, LayerMask.GetMask("Bullet"));
+        }
+        if (!Ishit)
+        {  Collider2D[] hitBullet = Physics2D.OverlapCircleAll(playerSprite.transform.position, 1, LayerMask.GetMask("Bullet"));
             if (hitBullet.Length > 0)
             {
                 Ishit = true;
@@ -211,6 +207,10 @@ public class PlayerController : MonoBehaviour
                     Ishit = false;
                 }));
             }
+        }
+         
+           
+           
 
     }
 
