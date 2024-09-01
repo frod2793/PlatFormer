@@ -29,8 +29,9 @@ public class EnemyBase : MonoBehaviour
     public float attackCoolTime = 1;
     public float moveRange = 10;
     public bool isDead = false;
-    public bool isMove = true;
+    public bool isMove = false;
 
+    public LayerMask groundLayer; // Ground 레이어를 설정하세요
     protected Rigidbody2D enemyRigidbody;
     protected GameObject fallowTarget;
 
@@ -40,7 +41,7 @@ public class EnemyBase : MonoBehaviour
     private int playerLayerMask;
 
     public PlayerController playerController;
-
+    Vector2 moveDirection;
 
     public delegate void ActionDelegate(GameObject obj);
 
@@ -61,7 +62,18 @@ public class EnemyBase : MonoBehaviour
     {
         DeadDelegate += Dead;
         playerLayerMask = LayerMask.GetMask("Player");
+        groundLayer = LayerMask.GetMask("Ground");
         enemyRigidbody = GetComponent<Rigidbody2D>();
+       
+    }
+    private void OnEnable()
+    {
+        StartCoroutine(
+            DelayAction(2f, () =>
+            {
+                isMove = true;
+                ChangeEnemyExpression(EnemyExpression.idle);
+            }));
     }
 
 
@@ -209,15 +221,30 @@ public class EnemyBase : MonoBehaviour
         {
             return;
         }
+        moveDirection = new Vector2(Random.Range(-1f, 1f), 0);
+        Vector2 frontMove = new Vector2(enemyRigidbody.position.x + moveDirection.x * moveRange, enemyRigidbody.position.y);
 
-        Vector2 moveDirection = new Vector2(Random.Range(-1f, 1f), 0);
-        Vector2 frontMove = new Vector2(enemyRigidbody.position.x + moveDirection.x * moveRange,
-            enemyRigidbody.position.y);
-        RaycastHit2D rayHit = Physics2D.Raycast(frontMove, Vector3.down, 1, LayerMask.GetMask("Ground"));
+        // 아래를 향한 Raycast로 땅을 감지합니다.
+        RaycastHit2D rayHitDown = Physics2D.Raycast(frontMove, Vector3.down, 1, groundLayer);
+        // 왼쪽을 향한 Raycast로 왼쪽 벽을 감지합니다.
+        RaycastHit2D rayHitLeft = Physics2D.Raycast(frontMove, Vector3.left, 1, groundLayer);
+        // 오른쪽을 향한 Raycast로 오른쪽 벽을 감지합니다.
+        RaycastHit2D rayHitRight = Physics2D.Raycast(frontMove, Vector3.right, 1, groundLayer);
 
-        if (rayHit.collider == null)
+        if (rayHitDown.collider == null)
         {
-            moveDirection.x *= -1;
+            // 땅이 없으면 방향을 반대로 변경
+            moveDirection = new Vector2(-moveDirection.x, 0);
+        }
+        else if (rayHitLeft.collider != null)
+        {
+            // 왼쪽 벽이 감지되면 오른쪽으로 이동
+            moveDirection = new Vector2(1, 0);
+        }
+        else if (rayHitRight.collider != null)
+        {
+            // 오른쪽 벽이 감지되면 왼쪽으로 이동
+            moveDirection = new Vector2(-1, 0);
         }
 
         float targetPositionX = transform.position.x + moveDirection.x * moveRange;

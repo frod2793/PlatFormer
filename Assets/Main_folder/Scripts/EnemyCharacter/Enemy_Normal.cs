@@ -9,12 +9,14 @@ public class Enemy_Normal : EnemyBase
     protected override void BaseInit()
     {
         base.BaseInit();
-       
+    
         enemyRigidbody = GetComponent<Rigidbody2D>();
         ChangeEnemyExpression(EnemyExpression.idle);
         playerController = FindObjectOfType<PlayerController>();
     }
 
+
+   
     protected override void Attack()
     {
         Debug.Log("플레이 디텍트 "+attackDamage);

@@ -9295,17 +9295,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilemap: {fileID: 598559045}
   platformTile: {fileID: 11400000, guid: 6a6e38be95b60416f9326dddefbf94b8, type: 2}
+  fillTile: {fileID: 11400000, guid: 6a6e38be95b60416f9326dddefbf94b8, type: 2}
   obstacleTile: {fileID: 0}
   powerUpTile: {fileID: 0}
   enemyPrefab: {fileID: 8887313745183700547, guid: 563dbedcc6c3a614ea5ba49cae5b281b, type: 3}
-  mapWidth: 100
-  mapHeight: -3
+  initialMapWidth: 20
+  mapHeight: -5
   platformChance: 0.5
   enemyChance: 0.05
   obstacleChance: 0.2
   powerUpChance: 0.02
   minPlatformLength: 3
   maxPlatformLength: 6
+  mapExtendDistance: 20
   backgroundPrefab: {fileID: 4914717958010339120, guid: 24029bfc7c832c04f931551d2029861d, type: 3}
   backgroundCount: 2
   backgroundWidth: 20

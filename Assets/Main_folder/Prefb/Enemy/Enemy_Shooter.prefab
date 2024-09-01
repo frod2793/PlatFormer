@@ -180,6 +180,10 @@ MonoBehaviour:
   attackCoolTime: 1
   moveRange: 10
   isDead: 0
-  isMove: 1
+  isMove: 0
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
   playerController: {fileID: 0}
   bulletPrefab: {fileID: 667896005393717854, guid: 2de35c68014b44d4480cb21059b7bb02, type: 3}
+  stopDistance: 10

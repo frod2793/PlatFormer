@@ -180,5 +180,8 @@ MonoBehaviour:
   attackCoolTime: 1
   moveRange: 10
   isDead: 0
-  isMove: 1
+  isMove: 0
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
   playerController: {fileID: 0}

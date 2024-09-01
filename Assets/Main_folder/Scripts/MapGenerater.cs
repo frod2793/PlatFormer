@@ -8,11 +8,12 @@ public class MapGenerator : MonoBehaviour
 {
     public Tilemap tilemap;
     public TileBase platformTile;
+    public TileBase fillTile; // 아래를 채울 타일
     public TileBase obstacleTile;
     public TileBase powerUpTile;
     public GameObject enemyPrefab; // 적 게임 오브젝트 프리팹
     public int initialMapWidth = 20;
-    public int mapHeight = 10;
+    public int mapHeight = 0;
     public float platformChance = 0.5f;
     public float enemyChance = 0.05f;
     public float obstacleChance = 0.1f;
@@ -32,7 +33,7 @@ public class MapGenerator : MonoBehaviour
     private float rightMostX;            // 가장 오른쪽 배경의 X 위치
     private float lastGeneratedX;        // 마지막으로 맵이 생성된 X 위치
 
-    private void Start()
+     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
         InitBackground();
@@ -125,16 +126,22 @@ public class MapGenerator : MonoBehaviour
         while (x < endX)
         {
             int platformLength = Mathf.FloorToInt(Random.Range(minPlatformLength, maxPlatformLength));
-            int y = Random.Range(0, mapHeight);
+            int y = Random.Range(3, mapHeight); // 0을 포함하면 아래로 채울 타일이 필요 없기 때문에 3부터 시작
 
             for (int i = 0; i < platformLength && x < endX; i++)
             {
                 tilemap.SetTile(new Vector3Int(x, y, 0), platformTile);
 
+                // 아래를 채우는 타일 배치
+                for (int fillY = y - 1; fillY >=-7; fillY--)
+                {
+                    tilemap.SetTile(new Vector3Int(x, fillY, 0), fillTile);
+                }
+
                 // 적 배치
                 if (Random.value < enemyChance)
                 {
-                    Vector3Int enemyPosition = new Vector3Int(x, y + 1, 0);
+                    Vector3Int enemyPosition = new Vector3Int(x, 10, 0);
                     Instantiate(enemyPrefab, tilemap.CellToWorld(enemyPosition), Quaternion.identity);
                 }
 
