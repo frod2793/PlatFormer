@@ -82,7 +82,7 @@ public class HP_UIManager : MonoBehaviour
                     ui.maxValue = enemyManager.Enemy_targetsList[i].hp;
                     ui.value = enemyManager.Enemy_targetsList[i].hp;
                     Enemy_uiElements[i] = ui.GetComponent<RectTransform>();
-                    Enemy_offsets[i] = new Vector3(0, 1, 0); // UI 오프셋 설정
+                    Enemy_offsets[i] = new Vector3(0.55f, 1, 0); // UI 오프셋 설정
                     Debug.Log("적 UI 생성");
                 }
             }

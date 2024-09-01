@@ -27,7 +27,6 @@ public class EnemyBase : MonoBehaviour
     [Range(0, 100f)]  public float attackRange = 1;
     public float attackDamage = 10;
     public float attackCoolTime = 1;
-    private float attackCoolTimeCounter = 0;
     public float moveRange = 10;
     public bool isDead = false;
     public bool isMove = true;
