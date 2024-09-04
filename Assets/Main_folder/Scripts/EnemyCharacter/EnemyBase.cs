@@ -31,6 +31,7 @@ public class EnemyBase : MonoBehaviour
     public bool isDead = false;
     public bool isMove = false;
 
+    public float distant = 1f;
     public LayerMask groundLayer; // Ground 레이어를 설정하세요
     protected Rigidbody2D enemyRigidbody;
     protected GameObject fallowTarget;
@@ -42,7 +43,7 @@ public class EnemyBase : MonoBehaviour
 
     public PlayerController playerController;
     Vector2 moveDirection;
-
+    Vector2 frontMove = Vector2.zero;
     public delegate void ActionDelegate(GameObject obj);
 
     public ActionDelegate DeadDelegate;
@@ -110,6 +111,7 @@ public class EnemyBase : MonoBehaviour
                 isChangingState = false;  // 상태 변경 완료 후 플래그 해제
             }));
         }
+        
     }
 
     protected IEnumerator DelayAction(float delay, Action action,bool isfront  = true)
@@ -215,40 +217,52 @@ public class EnemyBase : MonoBehaviour
     {
         isMove = false;
     }
+
     private void RandomMove()
     {
         if (!isMove)
         {
             return;
         }
-        moveDirection = new Vector2(Random.Range(-1f, 1f), 0);
-        Vector2 frontMove = new Vector2(enemyRigidbody.position.x + moveDirection.x * moveRange, enemyRigidbody.position.y);
 
-        // 아래를 향한 Raycast로 땅을 감지합니다.
-        RaycastHit2D rayHitDown = Physics2D.Raycast(frontMove, Vector3.down, 1, groundLayer);
-        // 왼쪽을 향한 Raycast로 왼쪽 벽을 감지합니다.
-        RaycastHit2D rayHitLeft = Physics2D.Raycast(frontMove, Vector3.left, 1, groundLayer);
-        // 오른쪽을 향한 Raycast로 오른쪽 벽을 감지합니다.
-        RaycastHit2D rayHitRight = Physics2D.Raycast(frontMove, Vector3.right, 1, groundLayer);
+        moveDirection = new Vector2(Random.Range(-1f, 1f), 0);
+        frontMove = new Vector2(enemyRigidbody.position.x + moveDirection.x * moveRange, enemyRigidbody.position.y);
+
+        // 땅 감지 Raycast
+        RaycastHit2D rayHitDown = Physics2D.Raycast(frontMove, Vector2.down, distant, groundLayer);
 
         if (rayHitDown.collider == null)
         {
             // 땅이 없으면 방향을 반대로 변경
-            moveDirection = new Vector2(-moveDirection.x, 0);
+            moveDirection.x *= -1;
         }
-        else if (rayHitLeft.collider != null)
+        else
         {
-            // 왼쪽 벽이 감지되면 오른쪽으로 이동
-            moveDirection = new Vector2(1, 0);
-        }
-        else if (rayHitRight.collider != null)
-        {
-            // 오른쪽 벽이 감지되면 왼쪽으로 이동
-            moveDirection = new Vector2(-1, 0);
+            // 벽 감지 Raycast
+            RaycastHit2D rayHitSide = Physics2D.Raycast(frontMove, moveDirection.x < 0 ? Vector2.left : Vector2.right, distant, groundLayer);
+            if (rayHitSide.collider != null)
+            {
+                // 벽이 감지되면 방향을 반대로 변경
+                moveDirection.x *= -1;
+            }
         }
 
+        // 이동 중 충돌 감지를 위한 OnUpdate 사용
         float targetPositionX = transform.position.x + moveDirection.x * moveRange;
-        transform.DOMoveX(targetPositionX, speed).OnComplete(RandomMove);
+        transform.DOMoveX(targetPositionX, speed).OnUpdate(() =>
+        {
+            // 이동 중 벽 충돌 감지
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, moveDirection.x < 0 ? Vector2.left : Vector2.right, distant, groundLayer);
+            if (hit.collider != null)
+            {  
+                moveDirection.x *= -1;
+                transform.DOKill();  // 이동 중지
+                ChangeEnemyExpression(EnemyExpression.idle);
+            }
+        }).OnComplete(() => {
+            transform.DOKill(); 
+            ChangeEnemyExpression(EnemyExpression.idle);
+        });
     }
 
     protected virtual void FallowPlayer(float delay = 0.6f)

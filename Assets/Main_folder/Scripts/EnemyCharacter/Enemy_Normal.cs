@@ -63,6 +63,8 @@ public class Enemy_Normal : EnemyBase
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, fallowRange);
         
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position, distant);
     }
     
    
