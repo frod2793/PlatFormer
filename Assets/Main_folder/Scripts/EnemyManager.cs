@@ -10,13 +10,16 @@ public class EnemyManager : MonoBehaviour
     void Awake()
     {
         Init();
-        
     }
 
 
     public void Init()
     {
         Enemy_targetsList.AddRange(FindObjectsOfType<EnemyBase>());
+    }
+    public void AddEnemy(EnemyBase obj)
+    {
+        Enemy_targetsList.Add(obj);
     }
     public void RemoveEnemy(GameObject obj)
     {
@@ -29,7 +32,5 @@ public class EnemyManager : MonoBehaviour
                 Debug.Log("적 제거");
             }
         }
-        
     }
-    
 }

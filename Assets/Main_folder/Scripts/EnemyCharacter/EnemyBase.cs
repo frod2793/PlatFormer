@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -48,6 +49,10 @@ public class EnemyBase : MonoBehaviour
 
     public ActionDelegate DeadDelegate;
     
+    private HP_UIManager hpUiManager;
+    
+    private EnemyManager enemyManager;
+    
     private void Awake()
     {
         BaseInit();
@@ -65,7 +70,16 @@ public class EnemyBase : MonoBehaviour
         playerLayerMask = LayerMask.GetMask("Player");
         groundLayer = LayerMask.GetMask("Ground");
         enemyRigidbody = GetComponent<Rigidbody2D>();
-       
+ 
+        if (hpUiManager == null)
+        {  
+            hpUiManager = FindObjectOfType<HP_UIManager>();
+            hpUiManager.Spawn_Eemy_UI_setting( this.gameObject);
+            
+        }
+        
+        
+        
     }
     private void OnEnable()
     {
@@ -75,6 +89,8 @@ public class EnemyBase : MonoBehaviour
                 isMove = true;
                 ChangeEnemyExpression(EnemyExpression.idle);
             }));
+
+        
     }
 
 

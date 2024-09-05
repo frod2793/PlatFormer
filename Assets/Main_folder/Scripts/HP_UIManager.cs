@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Net.Mime;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -36,12 +34,11 @@ public class HP_UIManager : MonoBehaviour
     [FormerlySerializedAs("uiElement")]
     public Slider PlayerHp_Slider; // UI 요소의 RectTransform
     private Camera mainCamera;
+    
     private RectTransform PlayerHp_SliderRectTransform;
-    
     private PlayerController playerController;
-    
     EnemyManager enemyManager;
-    
+    private Queue<Slider> enemyUIPool = new Queue<Slider>(); // 오브젝트 풀
     private void Start()
     {    
         playerController = FindObjectOfType<PlayerController>();
@@ -54,11 +51,80 @@ public class HP_UIManager : MonoBehaviour
         Enemy_UI_Init();
         InitializeSkills();
         PlayerHp_SliderRectTransform = PlayerHp_Slider.GetComponent<RectTransform>();
+
+        // 적 UI 오브젝트 풀 생성
+        InitializeEnemyUIPool(10); // 10개 정도의 UI를 미리 준비
+        
+    }
+    private void InitializeEnemyUIPool(int poolSize)
+    {
+        for (int i = 0; i < poolSize; i++)
+        {
+            Slider ui = Instantiate(Enemy_UIPrFeb, canvas.transform);
+            ui.gameObject.SetActive(false);
+            enemyUIPool.Enqueue(ui);
+        }
+    }
+    private Slider GetEnemyUIFromPool()
+    {
+        if (enemyUIPool.Count > 0)
+        {
+            Slider ui = enemyUIPool.Dequeue();
+            ui.gameObject.SetActive(true);
+            return ui;
+        }
+        else
+        {
+            // 풀에 남은 오브젝트가 없으면 새로 생성
+            Slider newUI = Instantiate(Enemy_UIPrFeb, canvas.transform);
+            return newUI;
+        }
+    }
+    
+    private void ReturnEnemyUIToPool(Slider ui)
+    {
+        ui.gameObject.SetActive(false);
+        enemyUIPool.Enqueue(ui);
     }
 
-
+    
     #region Enemy_UI
 
+
+    public void Spawn_Eemy_UI_setting(GameObject Enemy)
+    {
+        enemyManager.AddEnemy(Enemy.GetComponent<EnemyBase>());
+
+        // 적이 스폰되면 UI 생성
+        if (Enemy != null)
+        {
+            // Enemy_targetsList의 길이에 따라 적 UI 및 오프셋을 설정
+            int enemyCount = enemyManager.Enemy_targetsList.Count;
+
+            // 배열 크기 조정
+            Array.Resize(ref Enemy_uiElements, enemyCount);
+            Array.Resize(ref Enemy_offsets, enemyCount);
+
+            for (int i = 0; i < enemyCount; i++)
+            {
+                // 각 적에 대해 DeadDelegate를 추가하고 UI 요소를 생성
+                enemyManager.Enemy_targetsList[i].DeadDelegate += DeleteUIElement;
+
+                // UI 생성 및 설정
+                Slider ui = GetEnemyUIFromPool();
+                ui.maxValue = Enemy.GetComponent<EnemyBase>().hp;
+                ui.value = Enemy.GetComponent<EnemyBase>().hp;
+
+                RectTransform uiRectTransform = ui.GetComponent<RectTransform>();
+                Enemy_uiElements[i] = uiRectTransform; // 각 적에 대한 UI 요소 저장
+
+                Vector3 offset = new Vector3(0.55f, 1, 0);
+                Enemy_offsets[i] = offset; // 각 적에 대한 오프셋 설정
+
+                Debug.Log("적 UI 생성");
+            }
+        }
+    }
     private void Enemy_UI_Init()
     {
         enemyManager = FindObjectOfType<EnemyManager>();
@@ -104,7 +170,9 @@ public class HP_UIManager : MonoBehaviour
                 Debug.Log("적 UI 제거");
             }
         }
-        
+        int index = enemyManager.Enemy_targetsList.IndexOf(obj.GetComponent<EnemyBase>());
+        ReturnEnemyUIToPool(Enemy_uiElements[index].GetComponent<Slider>());
+        Debug.Log("적 UI 제거 및 반환");
     }
     #endregion
 
